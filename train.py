@@ -152,7 +152,7 @@ def train_sentence(name, node_ls):
     while not converge:
         total_cost = 0
         for sentence in sentence_ls:
-            cost, bpt = DTW(sentence, node_ls)
+            cost, bpt = DTW(sentence.val, node_ls)
             total_cost += cost
             _, path = parseBPT(bpt)
             sentence.update_segment(path)
