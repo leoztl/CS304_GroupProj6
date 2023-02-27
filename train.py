@@ -91,6 +91,11 @@ def load_mfcc(name):
 
 
 def update(node_ls, sentence_ls):
+    """update transition probabilities, mean, covariance for all emitting node
+
+    :param node_ls: node list
+    :param sentence_ls: sentence list 
+    """
     state_idx = 0
     for node in node_ls:
         if node.isNull:
@@ -134,6 +139,12 @@ def check_convergence(prev_cost, curr_cost):
 
 
 def train_sentence(name, node_ls):
+    """train model for single sequence
+
+    :param name: sequence name
+    :param node_ls: pre-flattened graph
+    :return: trained model
+    """
     sentence_ls = load_mfcc(name)
     converge = False
     iteration = 0
