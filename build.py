@@ -6,6 +6,7 @@ from num2words import num2words
 
 folder_path = "./p1_sentence"
 
+# read files from a folder and return a list of filenames without '.wav' extension
 def read_files(path):
 
     file_names = []
@@ -18,6 +19,7 @@ def read_files(path):
 
     return file_names
 
+# transform a digit-string to a node list that connects each other
 def load_initialized(file_name):
     
     startNull = CDR.NullState()
@@ -41,7 +43,7 @@ def load_initialized(file_name):
     
     return CDR.flatten(startNull)
       
-    
+# connect hmm with its starting and ending null node
 def connect(null1, hmm, null2):
     null1.next.append(hmm.getHead())
     hmm.getHead().edges.append((null1, 1))
