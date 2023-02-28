@@ -17,14 +17,14 @@ def update(node_ls, sentence_ls):
     for node in node_ls:
         if node.isNull:
             continue
-        stateNum = 0
+        vectorNum = 0
         vector_arr = np.empty((0, 39))
         for sentence in sentence_ls:
             stateNum += sentence.get_vectorNum(state_idx)
             state_vectors = sentence.get_vectors(state_idx)
             vector_arr = np.vstack((vector_arr, state_vectors))
         # calculate self transition probability
-        self_trans_prob = (stateNum - len(sentence_ls)) / stateNum
+        self_trans_prob = (vectorNum - len(sentence_ls)) / vectorNum
         next_trans_prob = 1 - self_trans_prob
         # calculate mean
         mean = np.mean(vector_arr, 0)

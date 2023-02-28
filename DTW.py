@@ -33,6 +33,8 @@ def DTW(sentence, node_ls):
             for edge in currentNode.edges:
                 parent = edge[0]
                 transition = edge[1]
+                if transition == 0:
+                    print(currentNode.edges)
                 if parent.isNull:
                     parentDis.append(parent.currDis - np.log(transition))
                 else:

@@ -9,7 +9,7 @@ class Node:
     """
     Pre-trained single gaussian state
     """
-    
+
     def __init__(self, mean, cov, name):
         """
         :param name: digit the state belongs to
@@ -85,7 +85,7 @@ class Hmm:
         Read and parse local hmm model
         """
         # load pre-trained model
-        model = utils.load_hmm(self.digit)
+        model = utils.load_hmm("./model/tz", self.digit)
         state_ls = model.state_ls
         trans_mat = model.trans_mat
         self.num = len(state_ls)
@@ -221,12 +221,23 @@ def parseBPT(bpt):
     return digit_seq, seq
 
 
+def resetTree(headNull):
+    q = queue.Queue()
+    q.put(headNull)
+    while not q.empty():
+        node = q.get()
+        node.visited = False
+        for child in node.next:
+            q.put(child)
+
+
 def flatten(headNull):
     """Flatten a tree into list using BFS, assign each node's id
     
     :param headNull: starting node/state of the tree to be flattened
     :return: a list of state object
     """
+    resetTree(headNull)
     currID = 0
     node_ls = []
     q = queue.Queue()
