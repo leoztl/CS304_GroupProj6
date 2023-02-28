@@ -6,11 +6,12 @@ class Sentence:
         self.name = name
         self.val = None
         self.seq = None
-
+        self.segment = None
         vectors = mfcc.mfcc_features(name, 40)
         self.val = vectors
 
     def update_segment(self, seq):
+        # utils.print_seq(seq)
         self.seq = seq
         segment = []
         start_idx = 0
