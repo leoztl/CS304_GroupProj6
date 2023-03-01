@@ -4,6 +4,7 @@ import utils
 import CDR
 import os
 import sentence as st
+from time import time
 from num2words import num2words
 
 
@@ -29,7 +30,8 @@ def resetHead(hmm):
     new_edge = []
     for edge in head.edges:
         parentNode = edge[0]
-        if parentNode == head:
+        # ignore all non-emitting parents
+        if not parentNode.isNull:
             new_edge.append(edge)
     head.edges = new_edge
 
@@ -51,10 +53,13 @@ def connect(nullstate, hmm):
     :param hmm: given hmm
     :return: new initizlied nullstate
     """
+    # remove all non-emitting states from last alignment
     resetHead(hmm)
     resetTail(hmm)
+    # connect head state
     nullstate.next.append(hmm.getHead())
     hmm.getHead().edges.append((nullstate, 1.0))
+    # initialize and connect new non-emitting state
     new_null = CDR.NullState()
     hmm.getTail().next.append(new_null)
     new_null.edges.append((hmm.getTail(), 0.5))
@@ -68,15 +73,21 @@ def get_node_ls(sentence, obj_ls):
     :param obj_ls: already initialized hmm models
     :return: flattened graph (node list)
     """
-    sentencePath = sentence.name
+    sentencePath = sentence.name  # get recording path
+    # get digit sequence (string)
     _, tail = os.path.split(sentencePath)
     digit_seq = tail.split(".")[0].split("_")[0]
+    # initialize starting non-emitting state
     startNull = CDR.NullState()
+    # get first silence hmm
     sil_0 = obj_ls[-1]
+    # connect starting non-emitting and first silence, get second non-emitting state
     currNull = connect(startNull, sil_0)
+    # conncect all digit hmms
     for digit in digit_seq:
         hmm = obj_ls[int(digit)]
         currNull = connect(currNull, hmm)
+    # connect end silence
     sil_1 = obj_ls[-2]
     currNull = connect(currNull, sil_1)
     return CDR.flatten(startNull)
@@ -174,10 +185,12 @@ def train(verbose):
             _, path = DTW.parseBPT(bpt)  # parse back pointer table to get path
             segment = sentence.update_segment(path)
             assign_vectors(sentence, path, feature_ls)  # assign each vector to corresponding state
-            if verbose:
+            """ if verbose:
                 # utils.print_seq(path)
                 print(segment)
-                print("*" * 100)
+                print("*" * 100) """
+        if verbose:
+            print("total cost: ", total_cost)
         update(node_ls, feature_ls)  # update all nodes after all alignments complete
         if iteration != 0:
             converge = DTW.check_convergence(prev_cost, total_cost)
@@ -190,4 +203,7 @@ def train(verbose):
         utils.save_hmm("./model/tz_trained", obj)
 
 
+start = time()
 train(True)
+end = time()
+print("total wall time: {:.4f}".format(end - start))
