@@ -155,11 +155,10 @@ def update(node_ls, feature_ls):
         node.cov = cov_diag
 
 
-def train(verbose):
+def initialize_model(sequence_folder):
     """
-    training digit hmm models from continuous digit sequences
+    load pre-trained HMMs of isolated digits. Return the HMMs in a list. 
     """
-    sequence_folder = "./sequences/tz"
     # read pre-trained isolated digit models
     obj_ls = []
     for i in range(10):
@@ -168,10 +167,20 @@ def train(verbose):
     # read pre-trained silence model
     obj_ls.append(CDR.Hmm("sil", "sil0"))
     obj_ls.append(CDR.Hmm("sil", "sil1"))
+    return obj_ls
+
+
+def train(verbose, threshold):
+    """
+    training digit hmm models from continuous digit sequences
+    """
+    sequence_folder = "./sequences/tz"
+    obj_ls = initialize_model(sequence_folder)
     converge = False
     iteration = 0
     prev_cost = None
     sentence_ls = get_recordings(sequence_folder)
+    cost_ls = []
     while not converge:
         if verbose:
             print("iteration: ", iteration)
@@ -193,10 +202,11 @@ def train(verbose):
             print("total cost: ", total_cost)
         update(node_ls, feature_ls)  # update all nodes after all alignments complete
         if iteration != 0:
-            converge = DTW.check_convergence(prev_cost, total_cost)
+            converge = DTW.check_convergence(prev_cost, total_cost, threshold)
 
         iteration += 1
         prev_cost = total_cost
+        cost_ls.append(total_cost)
 
     # save models
     for obj in obj_ls:
@@ -204,6 +214,6 @@ def train(verbose):
 
 
 start = time()
-train(True)
+train(True, 0.01)
 end = time()
 print("total wall time: {:.4f}".format(end - start))

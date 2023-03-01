@@ -90,9 +90,9 @@ def parseBPT(bpt):
     return digit_seq, path
 
 
-def check_convergence(prev_cost, curr_cost):
+def check_convergence(prev_cost, curr_cost, threshold):
     # print(prev_cost, curr_cost)
-    if np.abs(prev_cost - curr_cost) / prev_cost < 0.01:
+    if np.abs(prev_cost - curr_cost) / prev_cost < threshold:
         return True
     else:
         return False
