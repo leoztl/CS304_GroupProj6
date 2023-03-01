@@ -90,10 +90,6 @@ def parseBPT(bpt):
     return digit_seq, path
 
 
-def load_mfcc(name):
-    return
-
-
 def check_convergence(prev_cost, curr_cost):
     # print(prev_cost, curr_cost)
     if np.abs(prev_cost - curr_cost) / prev_cost < 0.01:

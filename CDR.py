@@ -222,6 +222,9 @@ def parseBPT(bpt):
 
 
 def resetTree(headNull):
+    """
+    reset visited attribute for all nodes
+    """
     q = queue.Queue()
     q.put(headNull)
     while not q.empty():
