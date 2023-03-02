@@ -66,7 +66,7 @@ class Hmm:
     Hidden Markov Model
     """
 
-    def __init__(self, name, idx):
+    def __init__(self, name, idx, folder="./model/tz"):
         """
         :param name: digit
         :param head: head node 
@@ -78,14 +78,14 @@ class Hmm:
         self.head = None
         self.Node_ls = []
         self.num = 0
-        self.parseHMM()
+        self.parseHMM(folder)
 
-    def parseHMM(self):
+    def parseHMM(self, folder):
         """
         Read and parse local hmm model
         """
         # load pre-trained model
-        model = utils.load_hmm("./model/tz", self.digit)
+        model = utils.load_hmm(folder, self.digit)
         state_ls = model.state_ls
         trans_mat = model.trans_mat
         self.num = len(state_ls)
@@ -123,21 +123,21 @@ class Word:
     Representation of all candidate HMMs for a digit position, a set of parallel HMMs
     """
 
-    def __init__(self, digits, idx):
+    def __init__(self, digits, idx, folder="./model/tz"):
         """
         :param digits: a list of candidate digit
         :param idx: index of the position in the numbers
         """
         self.hmm_ls = []
         self.idx = idx
-        self.parseDigits(digits)
+        self.parseDigits(digits, folder)
 
-    def parseDigits(self, digits):
+    def parseDigits(self, digits, folder):
         """
         load candidate HMM models
         """
         for digit in digits:
-            hmm = Hmm(digit, self.idx)
+            hmm = Hmm(digit, self.idx, folder)
             self.hmm_ls.append(hmm)
 
     def getAllHeads(self):
